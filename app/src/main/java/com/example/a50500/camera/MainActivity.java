@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
@@ -26,12 +27,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.UploadNotificationConfig;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private Uri filePath;
 
     // params for image uploading
-    public static final String UPLOAD_URL = "http://182.254.219.248:80/upload.php";
+    public static final String UPLOAD_URL = "http://182.254.219.248:80/img_upload.php";
     public static final String UPLOAD_KEY = "image";
     public static final String TAG_Msg = "MY MESSAGE";
 
@@ -153,34 +158,6 @@ public class MainActivity extends AppCompatActivity {
             Bitmap bitmap = (Bitmap)extras.get("data");
 //          Bitmap newbitmap = rotateBitmapByDegree(bitmap, 90);
             MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "wyk", "good");
-
-//            try{
-//                File file = new File("/storage/self/primary/", image_counter + ".jpg");
-//                if( !file.exists() ){
-//                    try {
-//                        file.createNewFile();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                else {
-//                    file.delete();
-//                    try {
-//                        file.createNewFile();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-//                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
-//                bos.flush();
-//                bos.close();
-//                Log.e(TAG, "img: "+image_counter);
-//                image_counter += 1;
-//            }catch(Exception e){
-//                e.printStackTrace();
-//            }
-
             imageView.setImageBitmap(bitmap);
         }
     }
@@ -228,17 +205,56 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected String doInBackground(Bitmap... params){
-                Bitmap bitmap = params[0];
-                String uploadImage = getStringImage(bitmap);
-                HashMap<String, String> data = new HashMap<>();
-                Log.e(TAG_Msg, "upload image...");
+//                Bitmap bitmap = params[0];
+//                String uploadImage = getStringImage(bitmap);
+//                HashMap<String, String> data = new HashMap<>();
+//                Log.e(TAG_Msg, "upload image...");
 //                Log.e(TAG_Msg, uploadImage);
-                data.put(UPLOAD_KEY, uploadImage);
-                return rh.sendPostRequest(UPLOAD_URL, data);
+//                data.put(UPLOAD_KEY, uploadImage);
+                uploadMultipart();
+                return "Image Uploading Complete!!!";//rh.sendPostRequest(UPLOAD_URL, data);
             }
         }
         UploadImage ui = new UploadImage();
         ui.execute(bitmap);
+    }
+
+
+    public void uploadMultipart() {
+        String name = "Test img";
+        String path = getPath(filePath);
+
+        try {
+            String uploadId = UUID.randomUUID().toString();
+
+            //Creating a multi part request
+            new MultipartUploadRequest(this, uploadId, UPLOAD_URL)
+                    .addFileToUpload(path, "image") //Adding file
+                    .addParameter("name", name) //Adding text parameter to the request
+                    .setNotificationConfig(new UploadNotificationConfig())
+                    .setMaxRetries(2)
+                    .startUpload(); //Starting the upload
+        } catch (Exception exc) {
+            Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    public String getPath(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        String document_id = cursor.getString(0);
+        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+        cursor.close();
+
+        cursor = getContentResolver().query(
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+        cursor.moveToFirst();
+        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        cursor.close();
+
+        return path;
     }
 
 
