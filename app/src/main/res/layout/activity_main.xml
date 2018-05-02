@@ -14,6 +14,27 @@
         android:text="@string/take_photo"
         android:onClick="startCamareActivity"/>
 
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_img"
+        android:id="@+id/buttonChoose"
+        android:onClick="chooseImg"/>
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/upload_img"
+        android:id="@+id/buttonUpload"
+        android:onClick="uploadImg"/>
+
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/view_img"
+        android:id="@+id/buttonViewImage" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
