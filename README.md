@@ -32,7 +32,7 @@
 | 32 | 2018-05-02 16:39:13 | http://127.0.0.1/img_uploads/32.jpg | toe      |
 | 33 | 2018-05-02 17:30:36 | http://127.0.0.1/img_uploads/33.jpg | Test img |
 
-**TODO** Backend image proceesing, including machine learning model
+**TODO** Backend image proceesing, including machine learning model.
 
 
 
