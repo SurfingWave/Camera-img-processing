@@ -18,11 +18,11 @@
 
 ## Php server
 
->|--**`img_upload.php`**:  Get the post request from android application store photo in directory `/img_uploads`, and store the `img_url` in the database.
+**`img_upload.php`**: Get the post request from android application store photo in directory `/img_uploads`, and store the `img_url` in the database.
 
->|--**`img_get.php`**: Retrieve the images in database, return the information, including the `id`, `date`, `img_url`, `name`.
+**`img_get.php`**: Retrieve the images in database, return the information, including the `id`, `date`, `img_url`, `name`.
 
->|--**`db_conn.php`**: Establish the database connection.
+**`db_conn.php`**: Establish the database connection.
 
 ### MySQL Table Structure
 |id | date| img_url| name|
