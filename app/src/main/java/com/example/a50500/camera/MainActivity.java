@@ -77,16 +77,6 @@ public class MainActivity extends AppCompatActivity {
         buttonChoose = (Button) findViewById(R.id.buttonChoose);
         buttonUpload = (Button) findViewById(R.id.buttonUpload);
         buttonView = (Button) findViewById(R.id.buttonViewImage);
-
-//        button = (Button) findViewById(R.id.button);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                startActivityForResult(intent, CAMERA_RESULT);
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse("file://" + mFilePath));
-//            }
-//        });
     }
 
 
@@ -118,16 +108,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void startCamareActivity(View view) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        File photoFile = null;
-//        try {
-//            photoFile = createImageFile();
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
-//        if (photoFile != null) {
-//            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-//            startActivityForResult(intent, CAMERA_RESULT);
-//        }
         startActivityForResult(intent, TAKE_PHOTO_REQUEST);
         Log.e(TAG, "Absolute path  "+ Environment.getExternalStorageDirectory());
     }
@@ -199,14 +179,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected String doInBackground(Bitmap... params){
-//                Bitmap bitmap = params[0];
-//                String uploadImage = getStringImage(bitmap);
-//                HashMap<String, String> data = new HashMap<>();
-//                Log.e(TAG_Msg, "upload image...");
-//                Log.e(TAG_Msg, uploadImage);
-//                data.put(UPLOAD_KEY, uploadImage);
                 uploadMultipart();
-                return "Image Uploading Complete!!!";//rh.sendPostRequest(UPLOAD_URL, data);
+                return "Image Uploading Complete!!!";
             }
         }
         UploadImage ui = new UploadImage();
