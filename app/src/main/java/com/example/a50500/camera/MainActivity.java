@@ -3,6 +3,7 @@ package com.example.a50500.camera;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,6 +31,8 @@ import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.UploadNotificationConfig;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     String  mCurrentPhotoPath;
 
     private Bitmap bitmap;
-    private Uri filePath;
+    private Uri filePath=null;
 
     // params for image uploading
     public static final String UPLOAD_URL = "http://182.254.219.248:80/img_upload.php";
@@ -121,18 +124,23 @@ public class MainActivity extends AppCompatActivity {
             filePath = intent.getData();
             try{
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                Log.e("Pickup image file path", filePath.toString());
                 imageView.setImageBitmap(bitmap);
             }catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
+        // take photo for immediate use, otherwise choose anohter photo from directory
         else if(requestCode==TAKE_PHOTO_REQUEST && resultCode == RESULT_OK){
+
             Bundle extras=intent.getExtras();
             Bitmap bitmap = (Bitmap)extras.get("data");
 //          Bitmap newbitmap = rotateBitmapByDegree(bitmap, 90);
-            MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "wyk", "good");
+
+            filePath=Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "wyk", "good"));
             imageView.setImageBitmap(bitmap);
+//            filePath=getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            Log.e("take photo file path", filePath.toString());
         }
     }
 
@@ -189,7 +197,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void uploadMultipart() {
+
         String name = "Test img";
+        if(filePath==null) {
+            Toast.makeText(this, "Must choose a image before upload", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Log.e("take image file path", filePath.toString());
         String path = getPath(filePath);
 
         try {
@@ -203,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
                     .setMaxRetries(2)
                     .startUpload(); //Starting the upload
         } catch (Exception exc) {
-            Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
+            exc.printStackTrace();
         }
     }
 
